@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>哈哈哈</title>
+	<link rel="stylesheet" type="text/css" href="css/reset.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+<body>
+	<div id="carousel">
+		<div id="picture" style="left:-600px;"><!--优先级-->
+			<img src="images/5.jpg" alt="1" width="600" height="400">
+			<img src="images/1.jpg" alt="1" width="600" height="400">
+			<img src="images/2.jpg" alt="2" width="600" height="400">
+			<img src="images/3.jpg" alt="3" width="600" height="400">
+			<img src="images/4.jpg" alt="4" width="600" height="400">
+			<img src="images/5.jpg" alt="1" width="600" height="400">
+			<img src="images/1.jpg" alt="4" width="600" height="400">
+		</div>
+		<div id="button">
+			<span index="1" class="on"></span>
+			<span index="2"></span>
+			<span index="3"></span>
+			<span index="4"></span>
+			<span index="5"></span>
+		</div>
+		<a href="javascript:;" id="prev" class="arrow"><</a>
+		<a href="javascript:;" id="next" class="arrow">></a>
+	</div>
+	<script type="text/javascript">
+		window.onload = function(){
+			var carousel=document.getElementById('carousel');
+			var picture=document.getElementById('picture');
+			var button=document.getElementById('button').getElementsByTagName('span');
+			var prev=document.getElementById('prev');
+			var next=document.getElementById('next');
+			var index=1;
+			var len = 5;
+            var animated = false;
+            var interval = 3000;
+            var timer;
+
+			
+			<!--点击箭头实现图片轮播-->
+			function animate(offset){
+				if(offset == 0){
+					return;
+				}
+				animated = true;
+				var time =300;
+				var interval = 10;
+				var speed = offset/(time/interval);
+				var left = parseInt(picture.style.left) + offset;
+				var go = function(){
+					if ((speed > 0 && parseInt(picture.style.left) < left) || (speed < 0 && parseInt(picture.style.left) > left)) {
+						picture.style.left = parseInt(picture.style.left) + speed +'px';
+						setTimeout(go,interval);
+					}
+					else{
+						picture.style.left = left +'px';
+						if(left>-200){
+							picture.style.left = -600 * len + 'px';
+						}
+						if (left<(-600 *len)) {
+							picture.style.left = '-600px';
+						}
+						animated = false;
+					}
+				}
+				go();
+			}
+			<!--小圆点轮播-->
+			function showbutton(){
+				for (var i = 0; i<button.length; i++) {
+					if (button[i].className == 'on') {
+						button[i].className='';
+						break;
+					}
+				}
+				button[index-1].className='on';
+			}
+			<!--自动播放-->
+			function play(){
+				timer = setTimeout(function(){
+					next.onclick();
+					play();
+				},interval);
+			}
+			<!--清除定时器-->
+			function stop(){
+				clearTimeout(timer);
+			}
+			<!--点击左箭头-->
+			prev.onclick=function(){
+				if (animated) {
+					return;
+				}
+				if (index == 1) {
+					index = 5;
+				}
+				else{
+					index -= 1;
+				}
+				showbutton();
+				animate(600);
+			}
+			<!--点击右箭头-->
+			next.onclick=function(){
+				if (animated) {
+					return;
+				}
+				if (index == 5) {
+					index = 1;
+				}
+				else{
+					index += 1;
+				}
+				showbutton();
+				animate(-600);
+			}
+			<!--点击按钮实现切换-->
+			for (var i = 0; i < button.length; i++) {
+				button[i].onclick = function(){
+					if (animated) {
+					return;
+				    }
+					if (this.className == 'on') {
+						return;//跳出函数
+					}
+					var newindex = parseInt(this.getAttribute('index'));
+					var offset = -600 * (newindex - index);
+					animate(offset);
+					index = newindex;
+					showbutton();
+				}
+			}
+			carousel.onmouseover = stop;
+			carousel.onmouseout = play;
+			play();
+			
+		}	
+	</script>
+</body>
+</html>
